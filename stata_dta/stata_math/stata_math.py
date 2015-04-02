@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function, unicode_literals
+
 import math
 
 from stata_dta.stata_dta import MissingValue, MISSING as mv, get_missing
@@ -705,7 +709,7 @@ def st_logit(x):
         return StataVarVals([_logit(v) for v in x.values])
     return _logit(x)
     
-def _max(*args, sub_max=None):
+def _max(sub_max=None, *args):
     input = [a for a in args if not _is_missing(a)]
     if sub_max is not None:
         input.append(sub_max)
@@ -738,7 +742,7 @@ def st_max(*args):
         return mv
     return max(scalars)
     
-def _min(*args, sub_min=None):
+def _min(sub_min=None, *args):
     input = [a for a in args if not _is_missing(a)]
     if sub_min is not None:
         input.append(sub_min)

@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals
+
 from struct import pack, unpack
 from struct import error as StructError
 from math import log, floor, sqrt
@@ -1138,7 +1140,7 @@ class Dta():
             pospc = [(pc * n / 100, int(pc * n / 100), pc) 
                      for pc in (1, 5, 10, 25, 50, 75, 90, 95, 99)]
             stats = {'p' + str(p[2]):((values[p[1]-1] + values[p[1]]) / 2 
-                     if p[0] == p[1] else values[floor(p[0])]) for p in pospc}
+                     if p[0] == p[1] else values[int(floor(p[0]))]) for p in pospc}
                         
             # largest and smallest values, with .'s added if n < 4
             prt_vals = (["{:>9g}".format(v) for v in values[:4]] + 
@@ -1343,7 +1345,7 @@ class Dta():
                 new_pct = values[nvals-1]
             else:
                 loc = nvals * pc / 100
-                loc_flr = floor(loc)
+                loc_flr = int(floor(loc))
                 t = loc - loc_flr
                 new_pct = (1 - t) * values[loc_flr - 1] + t * values[loc_flr]
             pctiles.append(new_pct)
@@ -1365,7 +1367,7 @@ class Dta():
                 if n == int(n):
                     new_pct = (values[int(n)-1] + values[int(n)]) / 2
                 else:
-                    new_pct = values[floor(n)]
+                    new_pct = values[int(floor(n))]
             pctiles.append(new_pct)
         return pctiles
     
@@ -1510,7 +1512,7 @@ class Dta():
             
             label = vlblist[index]
             label = label[:60] if label != "" else name
-            label = "".join((" " * (30 - floor(len(label)/2)), label))
+            label = "".join((" " * (30 - int(floor(len(label)/2))), label))
             print(header.format(label))
             if info["N"] != 0:
                 print(
@@ -1952,7 +1954,7 @@ class Dta():
         
         
         ndigits = (1 if len(obs) == 0 or obs[-1] <= 1 
-                   else floor(log(obs[-1] - 1, 10)) + 1)
+                   else int(floor(log(obs[-1] - 1, 10))) + 1)
         rownum_tplt = " {{:>{}}}. ".format(ndigits)
         colnum_tplt = ["{:" + ("<" if self._fmtlist[i][1] == "-" else ">") + 
                        "{}}}".format(w) for i, w in zip(indexes, widths)]
