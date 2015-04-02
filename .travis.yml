@@ -20,9 +20,13 @@ install:
   - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION pytest 
   - source activate stata-test
   - pip install pytest-cov
+  - pip install coveralls
 
 script:
-    - py.test --cov stata_dta --cov-config .coveragerc
+  - py.test --cov stata_dta --cov-config .coveragerc
+
+after_success:
+  - coveralls
 
 notifications:
   email: 
