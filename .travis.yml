@@ -17,11 +17,11 @@ install:
   - conda update conda
 
   # Install dependencies
-  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION nose
+  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION nose coverage
   - source activate stata-test
 
 script:
-    - nosetests --with-doctest --with-coverage --cover-package=stata_dta
+    - nosetests --with-coverage --cover-package=stata_dta #--with-doctest 
 
 notifications:
   email: 
