@@ -17,7 +17,7 @@ install:
   - conda update conda
 
   # Install dependencies
-  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION pytest 
+  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION pytest nose
   - source activate stata-test
   - pip install pytest-cov
   - pip install coveralls

@@ -1,6 +1,9 @@
 .. image:: https://travis-ci.org/Dannnno/stata-dta-in-python.svg
     :target: https://travis-ci.org/Dannnno/stata-dta-in-python
 
+.. image:: https://coveralls.io/repos/Dannnno/stata-dta-in-python/badge.svg 
+    :target: https://coveralls.io/r/Dannnno/stata-dta-in-python
+
 ###################
 Stata dta in Python
 ###################
