@@ -1,0 +1,10 @@
+[run]
+omit =
+    */python??/*
+    */python?.?/*
+    */site-packages/*
+    *__init__*
+    */tests/*
+
+[report]
+show_missing = True

@@ -7,5 +7,9 @@ setup(
     author_email='jrfiedler@gmail.com',
     packages=['stata_dta', 'stata_dta.stata_missing'],
     license='MIT',
-    description='Work with Stata .dta files in Python'
+    description='Work with Stata .dta files in Python',
+    classifiers=[
+    	'Programming Language :: Python :: 3',
+    	'Programming Language :: Python :: 2'
+    ]
 )

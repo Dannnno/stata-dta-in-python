@@ -3,7 +3,7 @@ sudo: False
 language: python
 
 python:
-  - "2.6"
+  #- "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
@@ -17,11 +17,12 @@ install:
   - conda update conda
 
   # Install dependencies
-  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION nose coverage
+  - conda create -n stata-test python=$TRAVIS_PYTHON_VERSION pytest 
   - source activate stata-test
+  - pip install pytest-cov
 
 script:
-    - nosetests --with-coverage --cover-package=stata_dta #--with-doctest 
+    - py.test --cov stata_dta --cov-config .coveragerc
 
 notifications:
   email: 
