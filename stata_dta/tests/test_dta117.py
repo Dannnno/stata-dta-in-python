@@ -8,7 +8,7 @@ import os
 from nose.plugins.skip import SkipTest
 
 from .. import open_dta, Dta117
-from .util import capture, raises
+from .util import capture, raises, skip_if_version
 
 
 examples_dir = os.path.join(
@@ -42,6 +42,7 @@ def test_save_to_file_no_name():
 
 
 def test_save_to_file_with_name():
+    skip_if_version('3')
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
     dta = Dta117(data)
     try:
@@ -57,6 +58,7 @@ def test_save_to_file_with_name():
 
 
 def test_save_to_file_name_exists():
+    skip_if_version('3')
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
     dta = Dta117(data)
     try:
@@ -67,7 +69,7 @@ def test_save_to_file_name_exists():
         assert False
     else:
         assert not raises(
-            dta.save, (IOError, OSError, WindowsError), replace=True)
+            dta.save, (IOError, OSError), replace=True)
     finally:
         os.remove('tempfile2.dta')
 

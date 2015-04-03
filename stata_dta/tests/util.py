@@ -2,6 +2,8 @@ from contextlib import contextmanager
 import io
 import sys
 
+from nose.plugins.skip import SkipTest
+
 
 def raises(lambda_, exception=Exception, *args, **kwargs):
 	try:
@@ -24,3 +26,8 @@ def capture():
     finally:
         out[0], out[1] = out[0].getvalue(), out[1].getvalue()
         sys.stdout, sys.stderr = oldout, olderr
+
+
+def skip_if_version(version):
+	if sys.version.startswith(version):
+		raise SkipTest
