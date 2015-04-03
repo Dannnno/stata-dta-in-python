@@ -2,6 +2,7 @@ stata_dta/__pycache__/
 stata_dta/stata_missing/__pycache__/
 incomplete/
 build/
+stata_dta/examples/
 *.pyc
 *.pyo
 *.pyd

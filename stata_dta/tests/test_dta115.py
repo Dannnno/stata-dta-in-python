@@ -7,7 +7,7 @@ import os
 
 from nose.plugins.skip import SkipTest
 
-from .. import open_dta, Dta117
+from .. import open_dta, Dta115
 from .util import capture, raises
 
 
@@ -15,9 +15,9 @@ examples_dir = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), 'examples')
 
 
-def test_iterable_to_dta117_list():
+def test_iterable_to_dta115_list():
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
-    dta = Dta117(data)
+    dta = Dta115(data)
 
     expected = """
     +----------------------------------+
@@ -37,13 +37,13 @@ def test_iterable_to_dta117_list():
 
 def test_save_to_file_no_name():
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
-    dta = Dta117(data)
+    dta = Dta115(data)
     assert raises(dta.save, ValueError)
 
 
 def test_save_to_file_with_name():
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
-    dta = Dta117(data)
+    dta = Dta115(data)
     try:
         dta.save('tempfile.dta')
     except (IOError,    # file exists and replace not selected Python2
@@ -58,7 +58,7 @@ def test_save_to_file_with_name():
 
 def test_save_to_file_name_exists():
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
-    dta = Dta117(data)
+    dta = Dta115(data)
     try:
         dta.save('tempfile2.dta')
     except (IOError,    # file exists and replace not selected Python2
@@ -75,7 +75,7 @@ def test_save_to_file_name_exists():
 def test_access_data():
     raise SkipTest
     data = [[0.0, 0.1, 0.2], [1.0, 1.1, 1.2], [2.0, 2.1, 2.2]]
-    dta = Dta117(data)
+    dta = Dta115(data)
 
     print(dta.var0_)
     assert False, dta.var0_

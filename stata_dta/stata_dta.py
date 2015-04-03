@@ -2,6 +2,8 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals
 )
 
+from .compatibility import str, is_string
+
 from struct import pack, unpack
 from struct import error as StructError
 from math import log, floor, sqrt
@@ -182,7 +184,7 @@ class Dta():
             raise TypeError("one or more arguments required (0 given)")
         
         first_arg = args[0]
-        if isinstance(first_arg, str):
+        if is_string(first_arg):
             if nargs > 2 or (nargs > 1 and "quiet" not in kwargs):
                 raise TypeError(
                     "incorrect arguments for creating Dta from file"
@@ -344,7 +346,7 @@ class Dta():
             if not hasattr(self, "_fullpath"):
                 raise ValueError("address or filename needed")
             address = self._fullpath
-        elif not isinstance(address, str):
+        elif not is_string(address):
             raise TypeError("given address or filename should be str")
         else:
             address = self._get_fullpath(address)
@@ -449,7 +451,7 @@ class Dta():
         is present, there should be no other varnames present.
         
         """
-        if isinstance(varnames, str):
+        if is_string(varnames):
             varnames = (varnames,)
         elif not isinstance(varnames, collections.Iterable):
             raise TypeError("variable names should be str or iterable of str")
@@ -457,7 +459,7 @@ class Dta():
         # first split into list of single abbrevs per str
         split_names = []
         for name in varnames:
-            if not isinstance(name, str):
+            if not is_string(name):
                 raise TypeError("must specify variables as string(s)")
             split_names += name.split()
         nnames = len(split_names)
@@ -730,7 +732,7 @@ class Dta():
             Index of variable in data set.
         
         """
-        if not isinstance(varname, str):
+        if not is_string(varname):
             raise TypeError("argument must be str")
         varname = self._find_vars(varname, empty_ok=False, single=True)[0]
         return self._varlist.index(varname)
@@ -750,7 +752,7 @@ class Dta():
             List of values of the specified data variable.
         
         """
-        if isinstance(id, str):
+        if is_string(id):
             varname = self._find_vars(id, empty_ok=False, single=True)[0]
             col = self._varlist.index(varname)
         elif isinstance(id, int):
@@ -793,7 +795,7 @@ class Dta():
         Replace old data variable name with new.
         
         """
-        if not isinstance(oldname, str) or not isinstance(newname, str):
+        if not (is_string(oldname) and is_string(newname)):
             raise TypeError("old and new variable names should be str")
         # unabbreviate oldname
         oldname = self._find_vars(oldname, empty_ok=False)[0] 
@@ -1379,8 +1381,7 @@ class Dta():
         if in_ is not None:
             if isinstance(in_, int):
                 in_ = (in_,)
-            elif (isinstance(in_, str) or 
-                    not isinstance(in_, collections.Iterable)):
+            elif is_string(in_) or not isinstance(in_, collections.Iterable):
                 raise TypeError("in_ option should be int or iterable of int")
             else:
                 in_ = tuple(in_)
@@ -1576,7 +1577,7 @@ class Dta():
         
         # weight stuff
             # check that all non-None weights are string
-        if any(w is not None and not isinstance(w, str) 
+        if any(w is not None and not is_string(w)
                for w in [weight, fweight, aweight, iweight]):
             raise TypeError("weight options must be None or string")
             
@@ -1756,7 +1757,7 @@ class Dta():
     
     def _convert_hex(self, hex_value):
         """convert Python's hex representation to Stata's"""
-        if not isinstance(hex_value, str):
+        if not is_string(hex_value):
             raise TypeError("given hex value must be str")
         m = HEX_RE.match(hex_value)
         if m is None:
@@ -2131,7 +2132,7 @@ class Dta():
         labels, value labels, notes, and characteristics.
         
         """
-        if not isinstance(oldname, str) or not isinstance(newname, str):
+        if not (is_string(oldname) and is_string(newname)):
             raise TypeError("old and new variable names should be str")
         # unabbreviate oldname
         oldname = self._find_vars(oldname, empty_ok=False)[0] 
@@ -2408,7 +2409,7 @@ class Dta():
         Inserts text as new note or replacement for old note.
         
         """
-        if not isinstance(note, str):
+        if not is_string(note):
             raise TypeError("note should be a string")
         names = self._find_vars(evarname, evars=True,
                                 empty_ok=False, single=True)
@@ -2690,7 +2691,7 @@ class Dta():
         Displays notes matching text.
         
         """
-        if not isinstance(text, str):
+        if not is_string(text):
             raise TypeError("search argument should be str")
         search_in_notes = self._search_in_notes
         display_notes = self._display_notes
@@ -2721,7 +2722,7 @@ class Dta():
         Adds label to data.
         
         """
-        if not isinstance(label, str):
+        if not is_string(label):
             raise TypeError("data label should be a string")
         if len(label) > 80:
             if not self._quiet:
@@ -2757,7 +2758,7 @@ class Dta():
         Adds label to variable.
         
         """
-        if not isinstance(label, str):
+        if not is_string(label):
             raise TypeError("variable label should be a string")
         names = self._find_vars(varname, empty_ok=False, single=True)
         index = self._varlist.index(names[0])
@@ -2845,7 +2846,7 @@ class Dta():
         Stores value -> label map in dataset (does not apply it).
         
         """
-        if not isinstance(name, str):
+        if not is_string(name):
             raise TypeError("label name should be str")
         if not isinstance(mapping, dict):
             raise TypeError("value, label mapping should be dict")
@@ -2863,12 +2864,12 @@ class Dta():
                         raise ValueError("conflict with existing labels")
         
         # test that keys are int and labels are str
-        if not all(isinstance(k, int) and isinstance(v, str) 
+        if not all(isinstance(k, int) and is_string(v)
                    for k,v in mapping.items()):
             raise TypeError("value, label mapping should be from int to str")
         
         # make copy of mapping
-        mapping = {k:v for k,v in mapping.items()}
+        mapping = dict((k,v) for k, v in mapping.items())
             
         if not add or name not in self._vallabs:
             # also if replace=True (after passing checks above)
@@ -2909,7 +2910,7 @@ class Dta():
         Stores or replaces a copy of a value -> label map in the data set.
         
         """
-        if not isinstance(orig_name, str) or not isinstance(copy_name, str):
+        if not (is_string(orig_name) and is_string(copy_name)):
             raise TypeError("label names should be str")
         if orig_name not in self._vallabs:
             raise KeyError(orig_name + " is not an existing label name")
@@ -2958,10 +2959,10 @@ class Dta():
         if labnames is None:
             labnames = vallabs.keys()
         else:
-            if isinstance(labnames, str):
+            if is_string(labnames):
                 labnames = (labnames,)
             elif (not isinstance(labnames, collections.Iterable)
-                    or not all(isinstance(value, str) for value in labnames)):
+                    or not all(is_string(value) for value in labnames)):
                 raise TypeError("labnames should be str or iterable of str")  
             labnames = set(name for value in labnames
                                 for name in value.split())
@@ -3010,10 +3011,10 @@ class Dta():
                 msg = "must specify label name(s) or drop_all==True"
                 raise ValueError(msg)
         else:
-            if isinstance(labnames, str):
+            if is_string(labnames):
                 labnames = (labnames,)
             elif (not isinstance(labnames, collections.Iterable)
-                    or not all(isinstance(value, str) for value in labnames)):
+                    or not all(is_string(value) for value in labnames)):
                 raise TypeError("labnames should be str or iterable of str") 
             labnames = set(name for value in labnames
                                 for name in value.split())
@@ -3053,7 +3054,7 @@ class Dta():
         
         """
         if labname is None: labname = ""
-        if not isinstance(labname, str):
+        if not is_string(labname):
             raise TypeError("label name should be str")
         varnames = self._find_vars(varnames, unique=True, empty_ok=False)
         index_func = self._varlist.index
@@ -3412,7 +3413,7 @@ class Dta():
             msg = "option -copy- may only be specified with option -new-"
             raise ValueError(msg)
         
-        if not isinstance(languagename, str):
+        if not is_string(languagename):
             raise TypeError("given language name must be str")
         if len(languagename) > 24:
             if not self._quiet:
@@ -3515,7 +3516,7 @@ class Dta():
         
         """
         if index is None or isinstance(index, int): return index
-        if isinstance(index, str):
+        if is_string(index):
             find_index = self._varlist.index
             return [find_index(v) for v in self._find_vars(index)]
         if isinstance(index, collections.Iterable):
@@ -3524,7 +3525,7 @@ class Dta():
             find_vars = self._find_vars
             find_index = self._varlist.index
             for i in index:
-                if isinstance(i, str):
+                if is_string(i):
                     new_index += [find_index(i) for i in find_vars(i)]
                 elif isinstance(i, int):
                     append(i)
@@ -3538,12 +3539,12 @@ class Dta():
         if isinstance(index, slice):
             start, stop, step = index.start, index.stop, index.step
             if not isinstance(start, int) and start is not None:
-                if isinstance(start, str):
+                if is_string(start):
                     start = self._varlist.index(self._find_vars(start)[0])
                 else:
                     raise TypeError("column slice values must be str or int")
             if not isinstance(stop, int) and stop is not None:
-                if isinstance(stop, str):
+                if is_string(stop):
                     stop = self._varlist.index(self._find_vars(stop)[0])
                 else:
                     raise TypeError("column slice values must be str or int")
@@ -3696,11 +3697,11 @@ class Dta():
         indexes = list(map(self._varlist.index, varnames))
         
         # check that fmts are specified properly
-        if isinstance(fmts, str):
+        if is_string(fmts):
             fmts = fmts.split()
         else:
             if ( not isinstance(fmts, collections.Iterable) 
-                    or not all(isinstance(f, str) for f in fmts) ):
+                    or not all(is_string(f) for f in fmts) ):
                 raise TypeError("given fmts must be str or iterable of str")
             fmts = [x for s in fmts for x in s.split()]
         if len(fmts) == 0:
@@ -3970,7 +3971,7 @@ class Dta():
         with open(address, 'rb') as dta_file:
             first_bytes = dta_file.read(11)
         ds_format = first_bytes[0]
-        if isinstance(ds_format, str):  # happens in Python 2.7
+        if is_string(ds_format):  # happens in Python 2.7
             ds_format = ord(ds_format)
         # If format is 117, then first_bytes[0] is "<", which == 60.
         if ds_format == 114 or ds_format == 115:
@@ -4027,8 +4028,8 @@ class Dta():
         type_dict = {251: ['b',1], 252: ['h',2], 253: ['l',4], 
                     254: ['f',4], 255: ['d',8]}
                     
-        def get_byte_str(str_len):
-            s = unpack(str(str_len) + 's', sfile.read(str_len))[0]
+        def get_byte_str(strlen):
+            s = unpack(str(strlen) + 's', sfile.read(strlen))[0]
             return s.partition(b'\0')[0].decode('iso-8859-1')
             
         def missing_object(miss_val, st_type):
@@ -4316,13 +4317,13 @@ class Dta():
             while next_three == "GSO":
                 vo = unpack(byteorder + "II", sfile.read(8))
                 t = unpack(byteorder + 'B', sfile.read(1))[0]
-                str_len = unpack(byteorder + 'I', sfile.read(4))[0]
+                strlen = unpack(byteorder + 'I', sfile.read(4))[0]
                 if t == 130:
                     new_str = (
-                        unpack(str(str_len) + 's', sfile.read(str_len))[0]
+                        unpack(str(strlen) + 's', sfile.read(strlen))[0]
                     )[:-1].decode('iso-8859-1')
                 else:
-                    new_str = sfile.read(str_len)
+                    new_str = sfile.read(strlen)
                 strls.update({vo: new_str})
                 next_three = get_str(3)
             if next_three != "</s" or get_str(5) != "trls>":
@@ -4475,7 +4476,7 @@ class Dta115(Dta):
                         if not self._quiet:
                             msg = "warning: strLs converted to strfs"
                             print(("{err}" if IN_STATA else "") + msg)
-                    str_len = 0
+                    strlen = 0
                     for i in range(nobs):
                         new_val = str(varvals[i][j])
                         val_len = len(new_val)
@@ -4488,12 +4489,12 @@ class Dta115(Dta):
                             new_val = new_val[:244]
                             val_len = 244
                         varvals[i][j] = new_val
-                        str_len = max(str_len, val_len)
-                    typlist[j] = str_len
+                        strlen = max(strlen, val_len)
+                    typlist[j] = strlen
                     m = STR_FMT_RE.match(fmtlist[j])
                     if not m or m.group(0) == '%9s' or int(m.group(3)) > 244:
                         align = m.group(1) if m.group(1) else ''
-                        fmtlist[j] = '%' + align + str(str_len) + 's'
+                        fmtlist[j] = '%' + align + str(strlen) + 's'
                 elif 0 < st_type < 245:
                     pass
                 elif 245 < st_type <= 2045:
@@ -4502,7 +4503,7 @@ class Dta115(Dta):
                         if not self._quiet:
                             msg = "warning: long strings truncated"
                             print(("{err}" if IN_STATA else "") + msg)
-                    str_len = 0
+                    strlen = 0
                     for i in range(nobs):
                         new_val = varvals[i][j]
                         val_len = len(new_val)
@@ -4511,12 +4512,12 @@ class Dta115(Dta):
                             new_val = new_val[:244]
                             val_len = 244
                         varvals[i][j] = new_val
-                        str_len = max(str_len, val_len)
-                    typlist[j] = str_len
+                        strlen = max(strlen, val_len)
+                    typlist[j] = strlen
                     m = STR_FMT_RE.match(fmtlist[j])
                     if not m or m.group(0) == '%9s' or int(m.group(3)) > 244:
                         align = m.group(1) if m.group(1) else ''
-                        fmtlist[j] = '%' + align + str(str_len) + 's'
+                        fmtlist[j] = '%' + align + str(strlen) + 's'
                 elif 65526 <= st_type <= 65530:
                     typlist[j] = 251 + (65530 - st_type)
                 elif not seen_strange:
@@ -4533,7 +4534,7 @@ class Dta115(Dta):
         
         # first, list-alize like tuplize in __setitem__
         def make_list(x):
-            if isinstance(x, str) or not isinstance(x, collections.Iterable):
+            if is_string(x) or not isinstance(x, collections.Iterable):
                 return [x]
             return list(x)
         
@@ -4554,7 +4555,7 @@ class Dta115(Dta):
         
         typlist = []
         
-        str_clipped = False
+        strclipped = False
         alt_missing = False
         
         curr_nvars = 0
@@ -4582,12 +4583,12 @@ class Dta115(Dta):
                 value = row[k]
                 st_type = typlist[k]
                 if st_type <= 244:
-                    if isinstance(value, str):
+                    if is_string(value):
                         val_len = len(value)
                         if val_len > 244:
                             value = value[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         typlist[k] = max(st_type, val_len)
                     elif value is None or isinstance(value, MissingValue):
                         value = ''
@@ -4607,16 +4608,16 @@ class Dta115(Dta):
                         if val_len > 244:
                             value = value[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         typlist[k] = max(st_type, val_len)
                     row[k] = value
                 else:
-                    if isinstance(value, str):
+                    if is_string(value):
                         val_len = len(value)
                         if val_len > 244:
                             value = value[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         row[k] = value
                         st_type = val_len
                         for j in range(i):
@@ -4633,7 +4634,7 @@ class Dta115(Dta):
                                 if val_len > 244:
                                     new_val = new_val[:244]
                                     val_len = 244
-                                    str_clipped = True
+                                    strclipped = True
                                 varvals[j][k] = new_val
                                 st_type = max(st_type, val_len)
                         typlist[k] = st_type
@@ -4674,7 +4675,7 @@ class Dta115(Dta):
         
         if not quiet:
             smcl = "{err}" if IN_STATA else ""
-            if str_clipped:
+            if strclipped:
                 msg = "warning: some strings were shortened to 244 characters"
                 print(smcl + msg)
             if alt_missing:
@@ -4748,13 +4749,13 @@ class Dta115(Dta):
         """
         global get_missing
         
-        if (isinstance(values, str) or 
+        if (is_string(values) or 
                 not isinstance(values, collections.Iterable)):
             if self._nobs <= 1:
                 values = [values]
             else:
                 raise TypeError("values to add must be in an iterable")
-        if not isinstance(name, str):
+        if not is_string(name):
             raise TypeError("variable name must be str")
         
         name = name.strip()
@@ -4771,7 +4772,7 @@ class Dta115(Dta):
         init_st_type = st_type
         if st_type is None:
             st_type = 251 if compress else 254
-        elif isinstance(st_type, str):
+        elif is_string(st_type):
             if re.match(r'^str[0-9]+$', st_type):
                 st_type = int(st_type[3:])
                 if st_type > 244:
@@ -4799,19 +4800,19 @@ class Dta115(Dta):
             for row in varvals:
                 row.append(this_missing)
         else:
-            str_clipped = False
+            strclipped = False
             alt_missing = False
             
             ismissing = self.ismissing
         
             for val, i in zip(values, range(nvals)):
                 if st_type <= 244:
-                    if isinstance(val, str):
+                    if is_string(val):
                         val_len = len(val)
                         if val_len > 244:
                             values[i] = val[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         st_type = max(st_type, val_len)
                     elif val is None or isinstance(val, MissingValue):
                         values[i] = ''
@@ -4830,16 +4831,16 @@ class Dta115(Dta):
                         if val_len > 244:
                             val = val[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         values[i] = val
                         st_type = max(st_type, val_len)
                 else:
-                    if isinstance(val, str):
+                    if is_string(val):
                         val_len = len(val)
                         if val_len > 244:
                             values[i] = val[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         st_type = val_len
                         for j in range(i):
                             valj = values[j]
@@ -4855,7 +4856,7 @@ class Dta115(Dta):
                                 if val_len > 244:
                                     new_val_j = new_val_j[:244]
                                     val_len = 244
-                                    str_clipped = True
+                                    strclipped = True
                                 values[j] = new_val_j
                                 st_type = max(st_type, val_len)
                     elif val is None:
@@ -4907,7 +4908,7 @@ class Dta115(Dta):
                     msg = (smcl + "warning: some values were incompatible with " + 
                            "specified type;\n    type changed to " + st_type_name)
                     print(msg)
-                if str_clipped:
+                if strclipped:
                     print(smcl + "warning: some strings were " + 
                           "shortened to 244 characters")
                 if alt_missing:
@@ -5000,7 +5001,7 @@ class Dta115(Dta):
         varlist = self._varlist
         old_typlist = [typlist[i] for i in sel_cols]
         
-        str_clipped = False
+        strclipped = False
         alt_missing = False
         
         for row_num, i in zip(sel_rows, range(len(sel_rows))):
@@ -5009,12 +5010,12 @@ class Dta115(Dta):
                 val = row[k]
                 st_type = typlist[col_num]
                 if st_type <= 244:
-                    if isinstance(val, str):
+                    if is_string(val):
                         val_len = len(val)
                         if val_len > 244:
                             val = val[:244]
                             val_len = 244
-                            str_clipped = True
+                            strclipped = True
                         if val_len > st_type:
                             typlist[col_num] = val_len
                     elif val is None or isinstance(val, MissingValue):
@@ -5025,7 +5026,7 @@ class Dta115(Dta):
                                "take non-string values")
                         raise TypeError(msg)
                 else:
-                    if isinstance(val, str):
+                    if is_string(val):
                         msg = ("\"" + varlist[col_num] + "\" cannot take " + 
                                "string values; has Stata type " + 
                                self._get_type_name(st_type))
@@ -5074,7 +5075,7 @@ class Dta115(Dta):
                 seen_cols.add(c)
             
             smcl = "{err}" if IN_STATA else ""
-            if str_clipped:
+            if strclipped:
                 msg = "warning: some strings were shortened to 244 characters"
                 print(smcl + msg)
             if alt_missing:
@@ -5378,7 +5379,7 @@ class Dta117(Dta):
                     else:
                         row[k] = str(value)
                 elif st_type < 32768:
-                    if isinstance(value, str):
+                    if is_string(value):
                         val_len = len(value)
                         typlist[k] = (32768 if val_len > 2045 
                                             else max(st_type, val_len))
@@ -5404,7 +5405,7 @@ class Dta117(Dta):
                                             else max(st_type, val_len))
                     row[k] = value
                 else:
-                    if isinstance(value, str):
+                    if is_string(value):
                         max_len = len(value)
                         row[k] = value
                         for j in range(i):
@@ -5549,7 +5550,7 @@ class Dta117(Dta):
                 values = [values]
             else:
                 raise TypeError("values to add must be in an iterable")
-        if not isinstance(name, str):
+        if not is_string(name):
             raise TypeError("variable name must be str")
         
         name = name.strip()
@@ -5566,7 +5567,7 @@ class Dta117(Dta):
         init_st_type = st_type
         if st_type is None:
             st_type = 65530 if compress else 65527
-        elif isinstance(st_type, str):
+        elif is_string(st_type):
             m = re.match(r'^str([0-9]+|L)$', st_type)
             if m:
                 if m.group(1) == "L":
@@ -5622,7 +5623,7 @@ class Dta117(Dta):
                     else:
                         values[i] = str(val)
                 elif st_type <= 2045:
-                    if isinstance(val, str):
+                    if is_string(val):
                         val_len = len(val)
                         st_type = (32768 if val_len > 2045 
                                         else max(st_type, val_len))
@@ -5647,7 +5648,7 @@ class Dta117(Dta):
                         st_type = (32768 if val_len > 2045 
                                         else max(st_type, val_len))
                 else:
-                    if isinstance(val, str):
+                    if is_string(val):
                         max_len = len(val)
                         for j in range(i):
                             valj = values[j]
@@ -5833,7 +5834,7 @@ class Dta117(Dta):
                                "\" must be str or bytes")
                         raise TypeError(msg)
                 elif st_type <= 2045:
-                    if isinstance(val, str):
+                    if is_string(val):
                         val_len = len(val)
                         typlist[col_num] = (32768 if val_len > 2045 
                                                  else max(st_type, val_len))
@@ -6156,7 +6157,7 @@ class Dta117(Dta):
             for (o,v), value in strls:
                 dta.write(bytearray('GSO', 'iso-8859-1'))
                 dta.write(pack(byteorder + 'II', v, o))
-                if isinstance(value, str):
+                if is_string(value):
                     try:
                         # expect error in next line if anywhere
                         value = bytes(value, 'iso-8859-1') + b'\x00'
@@ -6422,7 +6423,7 @@ def open_dta(address):
     with open(address, 'rb') as dta_file:
         first_bytes = dta_file.read(11)
     ds_format = first_bytes[0]
-    if isinstance(ds_format, str):  # happens in Python 2.7
+    if is_string(ds_format):  # happens in Python 2.7
         ds_format = ord(ds_format)
     # If format is 117, then first_bytes[0] is "<", which gets unpacked as 60.
     if ds_format == 114 or ds_format == 115:
