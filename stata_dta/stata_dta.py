@@ -2579,7 +2579,7 @@ class Dta():
             
             drop_all = False
             
-            if keep_nums == set() or keep_nums == {0,}:
+            if keep_nums == set() or keep_nums == set([0]):
                 drop_all = True
                 drop_nums.add(0)
                 
