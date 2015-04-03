@@ -2,11 +2,15 @@ sudo: False
 
 language: python
 
-python:
-  - "2.6"
-  - "2.7"
-  - "3.3"
-  - "3.4"
+matrix:
+  fast_finish: true
+  allow_failures: 
+    - python: "2.6"
+  include:
+    - python: "2.6"
+    - python: "2.7"
+    - python: "3.3"
+    - python: "3.4"
 
 install:
   # Install conda

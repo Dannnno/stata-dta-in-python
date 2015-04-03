@@ -1143,8 +1143,10 @@ class Dta():
             values.sort()
             pospc = [(pc * n / 100, int(pc * n / 100), pc) 
                      for pc in (1, 5, 10, 25, 50, 75, 90, 95, 99)]
-            stats = {'p' + str(p[2]):((values[p[1]-1] + values[p[1]]) / 2 
-                     if p[0] == p[1] else values[int(floor(p[0]))]) for p in pospc}
+            stats = dict(
+                    ('p' + str(p[2]), 
+                     ((values[p[1]-1] + values[p[1]]) / 2 if p[0] == p[1]
+                      else values[int(floot(p[0]))])) for p in pospc)
                         
             # largest and smallest values, with .'s added if n < 4
             prt_vals = (["{:>9g}".format(v) for v in values[:4]] + 
