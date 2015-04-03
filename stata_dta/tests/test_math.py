@@ -20,9 +20,35 @@ from .. import stata_math as st_math
 # number of decimal places to check for float equality
 NUM_PLACES = 10
 
+
 def cloglog(x):
     log = math.log
     return log(-log(1 - x))
+
+
+def invcloglog(x):
+    exp = math.exp
+    return 1 - exp(-exp(x))
+
+
+def invlogit(x):
+    return math.exp(x)/(1 + math.exp(x))
+
+
+def ln(x):
+    return math.log(x)
+
+
+def lngamma(x):
+    return min(mv, math.lgamma(x))
+
+
+def log10(x):
+    return math.log(x, 10)
+
+
+def sign(x):
+    return 0 if x == 0 else -1 if x < 0 else 1
 
 
 def _get_listified_domain(domain):
@@ -65,15 +91,26 @@ class TestMissingVars(object):
 
 
 # maps the function to test to its domain
-math_fctns = {'acos': linspace(-1, 1, 1000),
-              'abs': linspace(-100, 100, 1000),
-              'acosh': linspace(1, 100, 1000),
-              'asin': linspace(-1, 1, 1000),
-              'asinh': linspace(-100, 100, 1000),
-              'atan': linspace(-100, 100, 1000),
-              'cos': linspace(-100, 100, 1000),
-              'cosh': linspace(-100, 100, 1000),
-              'exp': linspace(-100, 100, 1000),
+math_fctns = {'acos': linspace(-1, 1, 3000),
+              'abs': linspace(-100, 100, 3000),
+              'acosh': linspace(1, 100, 3000),
+              'asin': linspace(-1, 1, 3000),
+              'asinh': linspace(-100, 100, 3000),
+              'atan': linspace(-100, 100, 3000),
+              'cos': linspace(-100, 100, 3000),
+              'cosh': linspace(-100, 100, 3000),
+              'exp': linspace(-100, 100, 3000),
+              'invcloglog': linspace(-100, 100, 3000),
+              'invlogit': linspace(-100, 100, 3000),
+              'ln': linspace(1, 100, 3000),
+              'lngamma': linspace(1, 100, 3000),
+              'log10': linspace(1, 100, 3000),
+              'sign': linspace(-100, 100, 3000),
+              'sin': linspace(-100, 100, 3000),
+              'sinh': linspace(-100, 100, 3000),
+              'sqrt': linspace(0, 100, 3000),
+              'tan': linspace(-100, 100, 3000),
+              'tanh': linspace(-100, 100, 3000)
               }
 
 
@@ -111,13 +148,19 @@ def test_math_fctns_StataVariable_and_mv():
 # be done to test them
 
 #atan2
-
 #atanh
-
 #ceil
-
 #cloglog
-
 #comb
-
 #digamma
+#floor
+#int
+#lnfactorial
+#logit
+#max
+#min
+#mod
+#reldiff
+#round
+#sum
+#trigamma

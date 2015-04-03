@@ -1829,7 +1829,7 @@ class Dta():
                 fmt_append((last_char, fmt, int(fmt[1:-1])))
             elif last_char == 'x': # hexadecimal
                 fmt_append(('x', fmt, 21))
-            elif last_char in {'f', 'g', 'e', 'c'}: # numeric
+            elif last_char in set(['f', 'g', 'e', 'c']): # numeric
                 m = NUM_FMT_RE.match(fmt)
                 align, _, wid, delim, prec, type, com = (m.group(1), m.group(2), 
                                                          m.group(3), m.group(4),
