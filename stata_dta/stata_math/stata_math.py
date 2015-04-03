@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import (
     absolute_import, division, print_function, unicode_literals
 )
@@ -24,6 +23,7 @@ def _is_missing(x):
         return True
     return False
 
+
 def st_abs(x):
     """Absolute value function.
     
@@ -44,6 +44,7 @@ def st_abs(x):
     if _is_missing(x):
         return mv
     return abs(x)
+
 
 def st_acos(x):
     """Inverse cosine function.
@@ -66,6 +67,7 @@ def st_acos(x):
     if _is_missing(x) or not -1 <= x <= 1:
         return mv
     return math.acos(x)
+
 
 def st_acosh(x):
     """Inverse hyperbolic cosine function.

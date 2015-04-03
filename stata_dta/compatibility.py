@@ -6,11 +6,13 @@ if sys.version.startswith('3'):
 	str = _str
 	range = range
 	zip = zip
+	map = map
 	builtin = __import__('builtins')
 else:
 	str = unicode
 	range = xrange
 	zip = itertools.izip
+	map = itertools.imap
 	builtin = __import__('__builtin__')
 
 

@@ -2570,7 +2570,7 @@ class Dta():
             
             if 'note0' not in chars: continue
             
-            note_nums = {int(k[4:]) for k in chars if k.startswith("note")}
+            note_nums = set(int(k[4:]) for k in chars if k.startswith("note"))
             drop_nums = in_intersect(note_nums) if in_ else note_nums
             
             if len(drop_nums) == 0: continue            
