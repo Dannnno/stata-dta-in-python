@@ -228,8 +228,8 @@ class Dta():
         self._vlblist = [old_dta._vlblist[i] for i in sel_cols]
         
         # expansion fields
-        self._chrdict = {k:v for k,v in old_dta._chrdict.items() 
-                         if k == '_dta' or k in self._varlist}
+        self._chrdict = dict((k, v) for k, v in old_dta._chrdict.items() 
+                             if k == '_dta' or k in self._varlist)
         
         # data
         self._varvals = [[old_dta._varvals[i][j] for j in sel_cols] 
